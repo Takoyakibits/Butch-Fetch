@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/tutorial">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_tutorial"
+        android:layout_width="187dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="736dp"
+        android:layout_marginEnd="32dp"
+        android:background="@drawable/button_background"
+        android:onClick="navigateToMainActivity"
+        android:text="Back To Menu"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        app:fontFamily="@font/press_start_2p_font"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
