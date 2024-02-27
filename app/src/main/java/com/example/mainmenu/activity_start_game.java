@@ -59,26 +59,29 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
         btnPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cTimer != null) {
-                    SoundPlayer.playSFX(activity_start_game.this, isMutedSFX, 1 );
+                if (!gamePaused) {
                     // If the timer is running, pause it
                     pauseTimer();
                     SoundPlayer.pauseBGM();
+                    gamePaused = true;
                     // Show pause dialog
                     pauseDialog = new pause_dialog(activity_start_game.this, activity_start_game.this);
                     pauseDialog.show();
+                    btnPause.setEnabled(false); // Disable pause button
                 } else {
                     // If the timer is paused, resume it
                     startTimer();
+                    gamePaused = false;
                     // Dismiss pause dialog if it's showing
                     if (pauseDialog != null && pauseDialog.isShowing()) {
                         pauseDialog.dismiss();
                     }
                     SoundPlayer.playBGM(activity_start_game.this);
+                    btnPause.setEnabled(true); // Re-enable pause button
+
                 }
             }
         });
-
 
         // Initialize pause dialog
         pauseDialog = new pause_dialog(activity_start_game.this, activity_start_game.this);
@@ -91,6 +94,15 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Enable pause button when the activity is resumed
+        Button btnPause = findViewById(R.id.btn_pause);
+        btnPause.setEnabled(true);
+    }
+
 
     private void startTimer() {
         cTimer = new CountDownTimer(mTimeLeftInMills, 100) {
@@ -152,9 +164,14 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
         if (value) {
             startTimer();
             SoundPlayer.playBGM(this);
+            gamePaused = false; // Ensure game is not paused after resuming
         }
         // value2 indicates the status of the sound icon in the pause_dialog
         SoundPlayer.muteVolume(value2);
         isMutedSFX = value2;
+
+        // Enable the pause button when the dialog is dismissed
+        Button btnPause = findViewById(R.id.btn_pause);
+        btnPause.setEnabled(true);
     }
 }

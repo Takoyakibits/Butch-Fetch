@@ -21,8 +21,8 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_start_game"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="346dp"
+        android:layout_height="45dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="512dp"
         android:layout_marginEnd="32dp"
@@ -36,8 +36,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-
 
 
     <androidx.appcompat.widget.AppCompatButton
