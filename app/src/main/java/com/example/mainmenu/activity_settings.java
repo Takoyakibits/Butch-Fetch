@@ -24,13 +24,10 @@ public class activity_settings extends AppCompatActivity {
         Switch switchSound = findViewById(R.id.switch_sound);
         Switch switchMusic = findViewById(R.id.switch_music);
 
-
         // Set default values for switches
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         switchSound.setChecked(!prefs.getBoolean("isMutedSfx", false));
         switchMusic.setChecked(!prefs.getBoolean("isMuted", false));
-
-
 
         // Add listeners to switches
         switchSound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -53,8 +50,6 @@ public class activity_settings extends AppCompatActivity {
             }
         });
 
-
-
         // Button to go back to the menu
         Button btnBackToMenu = findViewById(R.id.btn_settings);
         btnBackToMenu.setOnClickListener(new View.OnClickListener() {
@@ -65,4 +60,5 @@ public class activity_settings extends AppCompatActivity {
             }
         });
     }
+
 }
