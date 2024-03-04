@@ -1,38 +1,45 @@
 package com.example.mainmenu;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.DialogInterface;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Locale;
-
 public class activity_start_game extends AppCompatActivity implements pause_dialog.DialogCallback {
 
     private TextView timerCount, scoreCount;
     private CountDownTimer cTimer;
-    // Starting time = 90 seconds
-    private static final int START_TIME_IN_MILLIS = 90000;
-    // Initialize the time left
-    private long mTimeLeftInMills = START_TIME_IN_MILLIS;
+    private long mTimeLeftInMills = 90000;
     private int runningScore = 0, pickupScore = 0, totalScore = 0;
     private boolean isMuted, isMutedSFX;
     private boolean gamePaused = false;
-    // Declare pause dialog variable
     private pause_dialog pauseDialog;
+
+    private ImageView roadImageView1;
+    private ImageView roadImageView2;
+
+    private Animation roadAnimation1;
+    private Animation roadAnimation2;
+
+    private long animationDuration = 5000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_game);
 
-        // Start timer (please adjust placement)
+        // Start timer
         startTimer();
 
         // Start background music
@@ -43,6 +50,26 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
         if (!isMuted) {
             SoundPlayer.playBGM(this);
         }
+
+        // Initialize road animations
+        roadImageView1 = findViewById(R.id.roadImageView1);
+        roadImageView2 = findViewById(R.id.roadImageView2);
+
+        roadAnimation1 = AnimationUtils.loadAnimation(this, R.anim.translate_animation);
+        roadAnimation2 = AnimationUtils.loadAnimation(this, R.anim.translate_animation);
+
+        // Set custom AnimationListeners for both animations
+        roadAnimation1.setAnimationListener(new MyAnimationListener(roadImageView2));
+        roadAnimation2.setAnimationListener(new MyAnimationListener(roadImageView1));
+
+        // Set the new duration for both animations
+        roadAnimation1.setDuration(animationDuration);
+        roadAnimation2.setDuration(animationDuration);
+
+        // Start the road animations for each ImageView
+        roadImageView1.startAnimation(roadAnimation1);
+        roadImageView2.startAnimation(roadAnimation2);
+
 
         // Example: Displaying a message in a TextView
         TextView textView = findViewById(R.id.textView);
@@ -78,7 +105,6 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
                     }
                     SoundPlayer.playBGM(activity_start_game.this);
                     btnPause.setEnabled(true); // Re-enable pause button
-
                 }
             }
         });
@@ -103,12 +129,10 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
         btnPause.setEnabled(true);
     }
 
-
     private void startTimer() {
         cTimer = new CountDownTimer(mTimeLeftInMills, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-                //
                 mTimeLeftInMills = millisUntilFinished;
                 updateScore();
                 updateCountDownText();
@@ -116,7 +140,6 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
 
             @Override
             public void onFinish() {
-                // execute code when the timer is finished
                 SoundPlayer.stopBGM();
                 Toast.makeText(getApplicationContext(), "Finished", Toast.LENGTH_SHORT).show();
             }
@@ -135,13 +158,11 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
         timerCount.setText(timeleftFormatted);
     }
 
-    // Score obtained from powerup
     private void addScore() {
         pickupScore += 250;
     }
 
     private void updateScore() {
-        // Increment running score based on time left
         if (mTimeLeftInMills >= 61000) {
             runningScore += 1;
         } else if (mTimeLeftInMills >= 31000) {
@@ -150,28 +171,50 @@ public class activity_start_game extends AppCompatActivity implements pause_dial
             runningScore += 10;
         }
 
-        // Ensure that the running score does not exceed the maximum limit
         runningScore = Math.min(runningScore, 4800);
 
-        // Calculate total score and format it, then set it to the score textView
         totalScore = runningScore + pickupScore;
         String formattedScore = String.format("%06d", totalScore);
         scoreCount.setText(formattedScore);
     }
+
     @Override
     public void onBooleanPassed(boolean value, boolean value2) {
-        // Returns true after closing the pause_dialog, used to resume the game
         if (value) {
             startTimer();
             SoundPlayer.playBGM(this);
-            gamePaused = false; // Ensure game is not paused after resuming
+            gamePaused = false;
         }
-        // value2 indicates the status of the sound icon in the pause_dialog
+
         SoundPlayer.muteVolume(value2);
         isMutedSFX = value2;
 
-        // Enable the pause button when the dialog is dismissed
         Button btnPause = findViewById(R.id.btn_pause);
         btnPause.setEnabled(true);
+    }
+
+    private static class MyAnimationListener implements Animation.AnimationListener {
+        private final ImageView imageView;
+
+        MyAnimationListener(ImageView imageView) {
+            this.imageView = imageView;
+        }
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+            // Do nothing on start
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            // Reset the position of the ImageView to create a seamless loop
+            imageView.clearAnimation();
+            imageView.startAnimation(animation);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+            // Do nothing on repeat
+        }
     }
 }
