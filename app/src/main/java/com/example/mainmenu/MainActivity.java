@@ -3,31 +3,74 @@ package com.example.mainmenu;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    VideoView videoView;
+    Button btnStartGame, btnTutorial, btnSettings, btnAboutUs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnStartGame = findViewById(R.id.btn_start_game);
-        Button btnTutorial = findViewById(R.id.btn_tutorial);
-        Button btnSettings = findViewById(R.id.btn_settings);
-        Button btnAboutUs = findViewById(R.id.btn_about_us);
+        videoView = findViewById(R.id.videoview);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.bg_video);
+        videoView.setVideoURI(uri);
+        videoView.start();
+
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+            }
+        });
+
+        // Initialize buttons and set click listeners
+        btnStartGame = findViewById(R.id.btn_start_game);
+        btnTutorial = findViewById(R.id.btn_tutorial);
+        btnSettings = findViewById(R.id.btn_settings);
+        btnAboutUs = findViewById(R.id.btn_about_us);
 
         btnStartGame.setOnClickListener(this);
         btnTutorial.setOnClickListener(this);
         btnSettings.setOnClickListener(this);
         btnAboutUs.setOnClickListener(this);
         SoundPlayer.initialize(this);
-
     }
+    @Override
+    protected void onResume() {
+        videoView.resume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestart() {
+        videoView.start();
+        super.onRestart();
+    }
+
+    @Override
+    protected void onPause() {
+        videoView.suspend();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        videoView.stopPlayback();
+        super.onDestroy();
+    }
+
+
 
     @Override
     public void onClick(View view) {
@@ -69,4 +112,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void exitApp(View view) {
         finishAffinity(); // Finish this activity and all activities immediately below it in the current task
     }
+
 }
